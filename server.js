@@ -68,12 +68,62 @@ router.post('/signin', async (req, res) => { // Use async/await
 });
 
 router.route('/movies')
+  .get(authJwtController.isAuthenticated, async (req, res) => {
+    try {
+      const movies = await Movie.find();
+      res.json(movies);
+    } catch (err) {
+      res.status(500).json({ message: 'Error fetching movies' });
+    }
+  })
+  .post(authJwtController.isAuthenticated, async (req, res) => {
+    const { title, releaseDate, genre, actors } = req.body;
+    if (!title || !releaseDate || !genre || !actors || actors.length === 0) {
+      return res.status(400).json({ message: 'All fields are required, including at least one actor.' });
+    }
+    try {
+      const newMovie = new Movie({ title, releaseDate, genre, actors });
+      await newMovie.save();
+      res.status(201).json({ movie: newMovie });
+    } catch (err) {
+      res.status(500).json({ message: 'Error saving movie' });
+    }
+  });
+
+  router.route('/movies/:title') // Movie titles
     .get(authJwtController.isAuthenticated, async (req, res) => {
-        return res.status(500).json({ success: false, message: 'GET request not supported' });
+      try {
+        const movie = await Movie.findOne({ title: req.params.title });
+        if (!movie) {
+          return res.status(404).json({ message: 'Movie not found' });
+        }
+        res.json({ movie });
+      } catch (err) {
+        res.status(500).json({ message: 'Error fetching movie' });
+      }
     })
-    .post(authJwtController.isAuthenticated, async (req, res) => {
-        return res.status(500).json({ success: false, message: 'POST request not supported' });
-    });
+    .put(authJwtController.isAuthenticated, async (req, res) => {
+      try {
+        const updatedMovie = await Movie.findOneAndUpdate({ title: req.params.title }, req.body, { new: true });
+        if (!updatedMovie) {
+          return res.status(404).json({ message: 'Movie not found' });
+        }
+        res.json({ message: 'Movie updated successfully', updatedMovie });
+      } catch (err) {
+        res.status(500).json({ message: 'Error updating movie' });
+      }
+    })
+    .delete(authJwtController.isAuthenticated, async (req, res) => {
+      try {
+        const deletedMovie = await Movie.findOneAndDelete({ title: req.params.title });
+        if (!deletedMovie) {
+          return res.status(404).json({ message: 'Movie not found' });
+        }
+        res.json({ message: 'Movie deleted successfully' });
+      } catch (err) {
+        res.status(500).json({ message: 'Error deleting movie' });
+      }
+    });clearImmediate
 
 app.use('/', router);
 

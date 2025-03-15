@@ -15,6 +15,32 @@ connectDB();
 
 // Movie schema
 var MovieSchema = new Schema({
+  title: {
+    type: String,
+    required: true,
+    index: true,
+  },
+
+  releaseDate: {
+    type: Date,
+    required: true,
+    min: [1900, 'Release date must be after 1900'],
+    max: [2024, 'Release date must be before 2024'],
+  },
+
+  genre: {
+    type: String,
+    enum: ['Action', 'Adventure', 'Comedy', 'Drama', 
+      'Fantasy', 'Horror', 'Mystery', 'Thriller', 
+      'Western', 'Science Fiction'],
+
+    required: true
+  },
+
+  actors: [{
+    actorName: {type: String, required: true},
+    characterName: {type: String, required: true},
+  }],
 
 });
 
