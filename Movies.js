@@ -42,6 +42,11 @@ var MovieSchema = new Schema({
     characterName: {type: String, required: true},
   }],
 
+  imageUrl: {
+    type: String,
+    default: ""
+  }
+
 });
 
 module.exports = mongoose.model('Movie', MovieSchema);
