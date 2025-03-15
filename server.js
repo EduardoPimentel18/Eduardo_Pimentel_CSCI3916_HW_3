@@ -43,7 +43,6 @@ router.post('/signup', async (req, res) => { // Use async/await
   }
 });
 
-
 router.post('/signin', async (req, res) => { // Use async/await
   try {
     const user = await User.findOne({ username: req.body.username }).select('name username password');

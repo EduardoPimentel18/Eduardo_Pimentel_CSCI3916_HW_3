@@ -22,7 +22,7 @@ var MovieSchema = new Schema({
   },
 
   releaseDate: {
-    type: Date,
+    type: Number,
     required: true,
     min: [1900, 'Release date must be after 1900'],
     max: [2024, 'Release date must be before 2024'],
